@@ -131,6 +131,21 @@ export class WishesService {
       throw new ForbiddenException('Нельзя копировать свой подарок');
     }
 
+    const existingCopy = await this.wishesRepository.findOne({
+      where: {
+        owner: { id: user.id },
+        name: wish.name,
+        link: wish.link,
+        image: wish.image,
+        price: +wish.price,
+        description: wish.description,
+      },
+    });
+
+    if (existingCopy) {
+      throw new BadRequestException('Вы уже копировали себе такой подарок');
+    }
+
     const copiedWish = await this.create(
       {
         name: wish.name,
